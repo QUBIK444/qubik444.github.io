@@ -1,0 +1,539 @@
+
+<div id="app" style="font-family:'Courier New',Courier,monospace;background:#1e1e2e;color:#cdd6f4;min-height:600px;display:flex;flex-direction:column;font-size:13px;line-height:1.5;border-radius:8px;overflow:hidden;">
+
+<!-- STATUSBAR -->
+<div style="background:#11111b;border-bottom:1px solid #313244;display:flex;align-items:center;justify-content:space-between;padding:0 12px;height:26px;flex-shrink:0;font-size:11px;color:#6c7086;">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span style="color:#cba6f7;font-weight:700;">i3</span>
+    <span id="ws1" onclick="nav('home')" style="padding:1px 8px;border-radius:2px;cursor:pointer;font-size:10px;font-weight:700;background:#cba6f7;color:#1e1e2e;">1:blog</span>
+    <span id="ws2" onclick="nav('editor')" style="padding:1px 8px;border-radius:2px;cursor:pointer;font-size:10px;font-weight:700;color:#6c7086;">2:editor</span>
+    <span id="ws3" onclick="nav('manage')" style="padding:1px 8px;border-radius:2px;cursor:pointer;font-size:10px;font-weight:700;color:#6c7086;">3:manage</span>
+    <span id="ws4" onclick="nav('about')" style="padding:1px 8px;border-radius:2px;cursor:pointer;font-size:10px;font-weight:700;color:#6c7086;">4:about</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span style="display:flex;align-items:center;gap:4px;"><span id="sdot" style="width:6px;height:6px;border-radius:50%;background:#a6e3a1;display:inline-block;"></span>online</span>
+    <span style="color:#313244;">|</span><span>arch</span><span style="color:#313244;">|</span>
+    <span id="clk" style="color:#cdd6f4;font-weight:600;">00:00</span>
+  </div>
+</div>
+
+<!-- BODY -->
+<div style="display:flex;flex:1;overflow:hidden;min-height:560px;">
+
+<!-- SIDEBAR -->
+<div style="width:185px;flex-shrink:0;background:#181825;border-right:1px solid #313244;display:flex;flex-direction:column;overflow-y:auto;">
+  <div style="padding:14px;border-bottom:1px solid #313244;">
+    <div style="font-size:10px;color:#a6e3a1;margin-bottom:2px;"><span style="color:#cba6f7;">user</span>@arch <span style="color:#6c7086;">~</span>/blog <span style="color:#cdd6f4;">$</span></div>
+    <div style="font-size:17px;font-weight:700;color:#cdd6f4;"><span style="color:#cba6f7;">~</span>/blog</div>
+    <div style="font-size:10px;color:#6c7086;">// writing from the tty</div>
+  </div>
+  <div style="padding:10px 8px 4px;">
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:#6c7086;padding:0 4px;margin-bottom:5px;">navigation</div>
+    <button id="nb-home" onclick="nav('home')" style="display:flex;align-items:center;gap:6px;width:100%;padding:5px 8px;border-radius:3px;background:#313244;border:1px solid rgba(203,166,247,.25);color:#cba6f7;font-family:inherit;font-size:11px;cursor:pointer;text-align:left;margin-bottom:3px;">
+      &#9632; ~/posts <span id="nc" style="margin-left:auto;font-size:10px;background:#45475a;color:#9399b2;padding:0 5px;border-radius:10px;">0</span>
+    </button>
+    <button id="nb-editor" onclick="nav('editor')" style="display:flex;align-items:center;gap:6px;width:100%;padding:5px 8px;border-radius:3px;background:transparent;border:1px solid transparent;color:#a6adc8;font-family:inherit;font-size:11px;cursor:pointer;text-align:left;margin-bottom:3px;">&#9632; ~/new-post</button>
+    <button id="nb-manage" onclick="nav('manage')" style="display:flex;align-items:center;gap:6px;width:100%;padding:5px 8px;border-radius:3px;background:transparent;border:1px solid transparent;color:#a6adc8;font-family:inherit;font-size:11px;cursor:pointer;text-align:left;margin-bottom:3px;">&#9632; ~/manage</button>
+    <button id="nb-about" onclick="nav('about')" style="display:flex;align-items:center;gap:6px;width:100%;padding:5px 8px;border-radius:3px;background:transparent;border:1px solid transparent;color:#a6adc8;font-family:inherit;font-size:11px;cursor:pointer;text-align:left;">&#9632; ~/about</button>
+  </div>
+  <div style="padding:10px 8px 4px;">
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:#6c7086;padding:0 4px;margin-bottom:5px;">tags</div>
+    <div id="tc" style="padding:0 4px;display:flex;flex-wrap:wrap;gap:4px;"></div>
+  </div>
+  <div style="margin-top:auto;padding:10px 14px 12px;border-top:1px solid #313244;font-size:10px;color:#6c7086;">
+    <div style="color:#a6e3a1;margin-bottom:2px;">pacman -Syu riceblog</div>
+    <div>no deps · pure js<br>github pages ready</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div style="flex:1;overflow-y:auto;padding:20px 22px;" id="main">
+
+  <!-- HOME -->
+  <div id="page-home">
+    <div style="margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #313244;">
+      <div style="font-size:10px;color:#6c7086;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;"><span style="color:#cba6f7;"># </span>posts</div>
+      <div style="font-size:20px;font-weight:700;letter-spacing:-.02em;">~/blog/posts</div>
+      <div id="pm" style="font-size:10px;color:#6c7086;margin-top:2px;"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;background:#181825;border:1px solid #313244;border-radius:3px;padding:5px 10px;margin-bottom:14px;">
+      <span style="color:#6c7086;font-size:12px;">&#128269;</span>
+      <input id="srch" oninput="onSearch(this.value)" placeholder="grep -r 'keyword' ./posts" style="flex:1;background:none;border:none;outline:none;color:#cdd6f4;font-family:inherit;font-size:12px;"/>
+    </div>
+    <div id="pc"></div>
+  </div>
+
+  <!-- POST -->
+  <div id="page-post" style="display:none;">
+    <div style="display:flex;gap:6px;margin-bottom:12px;">
+      <button onclick="nav('home')" style="font-family:inherit;font-size:11px;padding:4px 10px;border-radius:3px;background:transparent;border:1px solid #45475a;color:#a6adc8;cursor:pointer;">&#8592; cd ..</button>
+      <button id="pedit" style="font-family:inherit;font-size:11px;padding:4px 10px;border-radius:3px;background:transparent;border:1px solid #45475a;color:#a6adc8;cursor:pointer;">edit</button>
+    </div>
+    <div style="margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #313244;">
+      <div id="pft" style="font-size:20px;font-weight:700;letter-spacing:-.02em;margin-bottom:7px;line-height:1.2;"></div>
+      <div style="display:flex;gap:10px;align-items:center;font-size:10px;color:#6c7086;flex-wrap:wrap;">
+        <span id="pfd"></span><span style="color:#313244;">·</span><span id="pfr"></span><span style="color:#313244;">·</span><div id="pftags" style="display:flex;gap:4px;flex-wrap:wrap;"></div>
+      </div>
+    </div>
+    <div id="pb" style="font-size:12px;line-height:1.9;color:#bac2de;max-width:640px;"></div>
+  </div>
+
+  <!-- EDITOR -->
+  <div id="page-editor" style="display:none;">
+    <div style="margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #313244;">
+      <div style="font-size:10px;color:#6c7086;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;"><span style="color:#cba6f7;"># </span>editor</div>
+      <div style="font-size:18px;font-weight:700;">nano <span id="eml" style="color:#cba6f7;font-size:13px;"></span></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+      <button onclick="savePost()" style="font-family:inherit;font-size:11px;padding:4px 10px;border-radius:3px;background:#cba6f7;border:1px solid #cba6f7;color:#1e1e2e;font-weight:700;cursor:pointer;">&#128427; :w save</button>
+      <button onclick="exportMd()" style="font-family:inherit;font-size:11px;padding:4px 10px;border-radius:3px;background:#a6e3a1;border:1px solid #a6e3a1;color:#1e1e2e;font-weight:700;cursor:pointer;">&#8659; export .md</button>
+      <button onclick="importMd()" style="font-family:inherit;font-size:11px;padding:4px 10px;border-radius:3px;background:transparent;border:1px solid #45475a;color:#a6adc8;cursor:pointer;">&#8657; import .md</button>
+      <button onclick="nav('home')" style="font-family:inherit;font-size:11px;padding:4px 10px;border-radius:3px;background:transparent;border:1px solid #45475a;color:#a6adc8;cursor:pointer;margin-left:auto;">:q close</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;height:380px;">
+      <div style="display:flex;flex-direction:column;background:#181825;border:1px solid #313244;border-radius:3px;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:5px;padding:5px 8px;background:#11111b;border-bottom:1px solid #313244;font-size:10px;color:#6c7086;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#f38ba8;display:inline-block;"></span>
+          <span style="width:8px;height:8px;border-radius:50%;background:#f9e2af;display:inline-block;"></span>
+          <span style="width:8px;height:8px;border-radius:50%;background:#a6e3a1;display:inline-block;"></span>
+          <span style="margin-left:4px;color:#a6adc8;">INSERT — markdown</span>
+        </div>
+        <div style="display:flex;gap:5px;padding:5px 8px;border-bottom:1px solid #313244;flex-wrap:wrap;">
+          <input id="et" placeholder="title: My Post" style="flex:2;min-width:80px;background:#11111b;border:1px solid #313244;border-radius:3px;color:#cdd6f4;font-family:inherit;font-size:11px;padding:3px 7px;outline:none;"/>
+          <input id="etg" placeholder="tags: arch, rice" style="flex:1;min-width:80px;background:#11111b;border:1px solid #313244;border-radius:3px;color:#cdd6f4;font-family:inherit;font-size:11px;padding:3px 7px;outline:none;"/>
+          <select id="ec" style="background:#11111b;border:1px solid #313244;border-radius:3px;color:#cdd6f4;font-family:inherit;font-size:11px;padding:3px 5px;outline:none;cursor:pointer;">
+            <option value="mauve">mauve</option><option value="blue">blue</option><option value="green">green</option><option value="peach">peach</option><option value="red">red</option><option value="teal">teal</option>
+          </select>
+        </div>
+        <div style="padding:4px 8px;border-bottom:1px solid #313244;">
+          <input id="eex" placeholder="excerpt: short description (optional)" style="width:100%;box-sizing:border-box;background:#11111b;border:1px solid #313244;border-radius:3px;color:#cdd6f4;font-family:inherit;font-size:11px;padding:3px 7px;outline:none;"/>
+        </div>
+        <textarea id="eb" oninput="updPrev()" placeholder="## Start writing&#10;&#10;Use **bold**, *italic*, \`code\`.&#10;&#10;\`\`\`bash&#10;echo 'hello, arch'&#10;\`\`\`&#10;&#10;Ctrl+S to save." style="flex:1;background:transparent;border:none;color:#cdd6f4;font-family:inherit;font-size:11px;line-height:1.8;padding:10px;resize:none;outline:none;"></textarea>
+      </div>
+      <div style="display:flex;flex-direction:column;background:#181825;border:1px solid #313244;border-radius:3px;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:5px;padding:5px 8px;background:#11111b;border-bottom:1px solid #313244;font-size:10px;color:#6c7086;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#f38ba8;display:inline-block;"></span>
+          <span style="width:8px;height:8px;border-radius:50%;background:#f9e2af;display:inline-block;"></span>
+          <span style="width:8px;height:8px;border-radius:50%;background:#a6e3a1;display:inline-block;"></span>
+          <span style="margin-left:4px;color:#a6adc8;">PREVIEW — rendered</span>
+        </div>
+        <div id="pvb" style="flex:1;overflow-y:auto;padding:12px;font-size:12px;line-height:1.8;color:#bac2de;"></div>
+      </div>
+    </div>
+    <div style="margin-top:6px;font-size:10px;color:#6c7086;">Ctrl+S · save &nbsp;|&nbsp; Tab · indent &nbsp;|&nbsp; Markdown supported</div>
+  </div>
+
+  <!-- MANAGE -->
+  <div id="page-manage" style="display:none;">
+    <div style="margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #313244;">
+      <div style="font-size:10px;color:#6c7086;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;"><span style="color:#cba6f7;"># </span>manage</div>
+      <div style="font-size:18px;font-weight:700;">ls -la ~/posts</div>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+      <button onclick="nav('editor')" style="font-family:inherit;font-size:11px;padding:4px 10px;border-radius:3px;background:#cba6f7;border:1px solid #cba6f7;color:#1e1e2e;font-weight:700;cursor:pointer;">+ new post</button>
+      <button onclick="exportAll()" style="font-family:inherit;font-size:11px;padding:4px 10px;border-radius:3px;background:transparent;border:1px solid #45475a;color:#a6adc8;cursor:pointer;">&#8659; export JSON</button>
+      <button onclick="importAll()" style="font-family:inherit;font-size:11px;padding:4px 10px;border-radius:3px;background:transparent;border:1px solid #45475a;color:#a6adc8;cursor:pointer;">&#8657; import JSON</button>
+    </div>
+    <div id="ml"></div>
+    <div style="background:#181825;border:1px solid #313244;border-radius:3px;padding:10px 12px;font-size:11px;color:#6c7086;margin-top:14px;">
+      <span style="color:#a6e3a1;">$</span> Posts in <span style="color:#fab387;">localStorage</span>. Export JSON per backup. Per GitHub Pages esporta i post come <span style="color:#fab387;">.md</span>.
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div id="page-about" style="display:none;">
+    <div style="margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #313244;">
+      <div style="font-size:10px;color:#6c7086;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;"><span style="color:#cba6f7;"># </span>about</div>
+      <div style="font-size:18px;font-weight:700;">cat /etc/blog.conf</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:640px;">
+      <div style="background:#181825;border:1px solid #313244;border-radius:3px;padding:12px 14px;">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:#6c7086;margin-bottom:10px;"><span style="color:#585b70;">// </span>system</div>
+        <div style="font-size:11px;margin-bottom:4px;display:flex;gap:10px;"><span style="color:#89b4fa;min-width:80px;">os</span><span>arch linux</span></div>
+        <div style="font-size:11px;margin-bottom:4px;display:flex;gap:10px;"><span style="color:#89b4fa;min-width:80px;">wm</span><span>i3-gaps</span></div>
+        <div style="font-size:11px;margin-bottom:4px;display:flex;gap:10px;"><span style="color:#89b4fa;min-width:80px;">terminal</span><span>alacritty</span></div>
+        <div style="font-size:11px;margin-bottom:4px;display:flex;gap:10px;"><span style="color:#89b4fa;min-width:80px;">editor</span><span>neovim</span></div>
+        <div style="font-size:11px;margin-bottom:4px;display:flex;gap:10px;"><span style="color:#89b4fa;min-width:80px;">shell</span><span>zsh + starship</span></div>
+        <div style="font-size:11px;margin-bottom:4px;display:flex;gap:10px;"><span style="color:#89b4fa;min-width:80px;">theme</span><span>catppuccin mocha</span></div>
+        <div style="font-size:11px;display:flex;gap:10px;"><span style="color:#89b4fa;min-width:80px;">font</span><span>JetBrains Mono</span></div>
+      </div>
+      <div style="background:#181825;border:1px solid #313244;border-radius:3px;padding:12px 14px;">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:#6c7086;margin-bottom:10px;"><span style="color:#585b70;">// </span>blog</div>
+        <div style="font-size:11px;margin-bottom:4px;display:flex;gap:10px;"><span style="color:#89b4fa;min-width:80px;">engine</span><span>vanilla js</span></div>
+        <div style="font-size:11px;margin-bottom:4px;display:flex;gap:10px;"><span style="color:#89b4fa;min-width:80px;">host</span><span>github pages</span></div>
+        <div style="font-size:11px;margin-bottom:4px;display:flex;gap:10px;"><span style="color:#89b4fa;min-width:80px;">storage</span><span>localStorage</span></div>
+        <div style="font-size:11px;margin-bottom:4px;display:flex;gap:10px;"><span style="color:#89b4fa;min-width:80px;">deps</span><span style="color:#a6e3a1;">zero</span></div>
+        <div style="font-size:11px;margin-bottom:4px;display:flex;gap:10px;"><span style="color:#89b4fa;min-width:80px;">posts</span><span id="apc">—</span></div>
+        <div style="font-size:11px;display:flex;gap:10px;"><span style="color:#89b4fa;min-width:80px;">tags</span><span id="atc">—</span></div>
+      </div>
+      <div style="grid-column:1/-1;background:#11111b;border:1px solid #313244;border-radius:3px;padding:12px;font-size:11px;color:#a6e3a1;line-height:1.9;">
+        <span style="color:#6c7086;font-style:italic;"># ~/.config/i3/config — catppuccin mocha</span><br>
+        <span style="color:#89b4fa;">set</span> $base &nbsp;&nbsp;&nbsp;<span style="color:#a6e3a1;">#1e1e2e</span><br>
+        <span style="color:#89b4fa;">set</span> $mauve &nbsp;&nbsp;<span style="color:#a6e3a1;">#cba6f7</span><br>
+        <span style="color:#89b4fa;">set</span> $text &nbsp;&nbsp;&nbsp;<span style="color:#a6e3a1;">#cdd6f4</span><br>
+        <span style="color:#89b4fa;">client.focused</span> $mauve $base $text $mauve<br>
+        <span style="color:#89b4fa;">gaps inner</span> <span style="color:#fab387;">8</span><br>
+        <span style="color:#89b4fa;">gaps outer</span> <span style="color:#fab387;">4</span><br>
+        <span style="color:#89b4fa;">smart_gaps</span> <span style="color:#fab387;">on</span>
+      </div>
+    </div>
+    <div style="margin-top:12px;font-size:10px;color:#6c7086;">pure HTML/CSS/JS · no framework · no bundler · github pages ready · btw i use arch</div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /body -->
+</div><!-- /app -->
+
+<div id="notif" style="position:fixed;bottom:16px;right:16px;background:#181825;border:1px solid #a6e3a1;border-radius:3px;padding:7px 12px;font-size:11px;color:#a6e3a1;font-family:'Courier New',monospace;opacity:0;transform:translateY(60px);transition:all .25s;pointer-events:none;z-index:999;"></div>
+
+<style>
+#app *{box-sizing:border-box;}
+#pc .pc:hover{transform:translateX(2px);border-color:#45475a!important;}
+#pc .pc:hover .pc-bar{background:#cba6f7!important;}
+#pc .pc:hover .rm{color:#cba6f7!important;}
+.tag-mauve{border-color:rgba(203,166,247,.5)!important;color:#cba6f7!important;}
+.tag-blue{border-color:rgba(137,180,250,.5)!important;color:#89b4fa!important;}
+.tag-green{border-color:rgba(166,227,161,.5)!important;color:#a6e3a1!important;}
+.tag-peach{border-color:rgba(250,179,135,.5)!important;color:#fab387!important;}
+.tag-red{border-color:rgba(243,139,168,.5)!important;color:#f38ba8!important;}
+.tag-teal{border-color:rgba(148,226,213,.5)!important;color:#94e2d5!important;}
+.pc-content h2{font-size:13px;font-weight:600;color:#b4befe;padding-left:8px;border-left:2px solid #cba6f7;margin:14px 0 5px;}
+.pc-content h3{font-size:12px;font-weight:600;color:#89b4fa;margin:12px 0 5px;}
+.pc-content h1{font-size:16px;font-weight:700;color:#cdd6f4;margin:16px 0 6px;}
+.pc-content p{margin-bottom:8px;}
+.pc-content code{font-family:'Courier New',monospace;font-size:10px;background:#11111b;border:1px solid #313244;color:#fab387;padding:1px 4px;border-radius:2px;}
+.pc-content pre{background:#11111b;border:1px solid #313244;border-radius:3px;padding:10px;overflow-x:auto;margin:10px 0;position:relative;}
+.pc-content pre code{background:none;border:none;padding:0;color:#cdd6f4;font-size:11px;}
+.pc-content blockquote{border-left:2px solid #f9e2af;padding-left:8px;color:#7f849c;font-style:italic;margin:10px 0;}
+.pc-content ul,.pc-content ol{padding-left:16px;margin-bottom:8px;}
+.pc-content strong{color:#cdd6f4;font-weight:600;}
+.pc-content em{color:#b4befe;}
+.pc-content hr{border:none;border-top:1px solid #313244;margin:14px 0;}
+.nbon:hover{background:#313244!important;color:#cdd6f4!important;}
+</style>
+
+<script>
+const SK='rb3';
+const COLORS={mauve:'#cba6f7',blue:'#89b4fa',green:'#a6e3a1',peach:'#fab387',red:'#f38ba8',teal:'#94e2d5'};
+const DEF=[
+  {id:'dotfiles-philosophy',title:'The Philosophy of Dotfiles',date:'2024-12-15',tags:['arch','rice','config'],color:'mauve',
+   excerpt:"After years of maintaining dotfiles, opinions on what makes a good config system — and why most people overcomplicate it.",
+   content:`## The Problem with Most Dotfiles
+
+Most people's dotfiles start as a simple backup and evolve into a baroque system of symlinks and arcane shell scripts that only they can understand.
+
+\`\`\`bash
+# this shouldn't require a PhD
+stow --target=$HOME --dir=$DOTFILES packages/
+\`\`\`
+
+The irony is that dotfiles are supposed to make your life **easier**. If restoring from your dotfiles takes longer than setting up from scratch, you've already lost.
+
+## Principles I've Settled On
+
+### 1. One repo, flat structure
+
+No submodules. One directory per application, symlinked into \`$HOME\`. stow handles this elegantly.
+
+### 2. Everything declarative
+
+If you're running imperative setup scripts, you're doing it wrong. Keep an install.sh that's idempotent.
+
+### 3. Commented liberally
+
+Your future self has no memory. Comment every non-obvious keybind, every weird workaround.
+
+\`\`\`bash
+# fix for gaps appearing after monitor hotplug
+exec_always --no-startup-id sleep 0.5 && i3-msg reload
+\`\`\`
+
+## Conclusion
+
+The best dotfiles repo is the one you actually maintain. Your rice should look like *you*.`},
+  {id:'i3-workflow',title:'i3 as a Productivity Tool, Not Just Eye Candy',date:'2024-11-28',tags:['i3','workflow','linux'],color:'blue',
+   excerpt:"Tiling window managers have a reputation for being aesthetic tools. Here's how to actually use one productively.",
+   content:`## The Learning Curve is Real
+
+The first week with i3 is genuinely painful. After two weeks, your hands stop reaching for the mouse. After a month, floating WMs feel like wearing oven mitts.
+
+## Workspace Design Matters
+
+\`\`\`
+Workspace 1: terminal(s)
+Workspace 2: browser
+Workspace 3: editor / IDE
+Workspace 4: communication
+\`\`\`
+
+**Each workspace should have one purpose.** The moment you mix contexts, the cognitive benefit disappears.
+
+## Layouts That Work
+
+**Terminal workspace**: Tabbed layout. Multiple terminals, no visual clutter.
+
+**Editor workspace**: Vertical split. Editor 70%, terminal 30%.
+
+## Scratchpad is Underrated
+
+Any window can become a floating scratchpad, accessible from anywhere.
+
+\`\`\`bash
+bindsym $mod+grave scratchpad show
+\`\`\`
+
+I use it for: a persistent terminal, notes, a calculator.`},
+  {id:'arch-btw',title:"Why I Use Arch (and Why You Probably Shouldn't)",date:'2024-10-10',tags:['arch','linux','opinion'],color:'green',
+   excerpt:"The 'I use Arch btw' meme exists for a reason. But there's a genuinely compelling case beneath the gatekeeping.",
+   content:`## The Honest Case for Arch
+
+The reasons people cite for avoiding Arch are often wrong.
+
+**The install process**: Once genuinely difficult. Now with \`archinstall\` it's comparable to Ubuntu.
+
+**Stability**: Rolling release means immediate updates. Only a problem if you update without reading the Arch news.
+
+## Why I Actually Use It
+
+### The AUR
+
+The Arch User Repository is the killer feature.
+
+\`\`\`bash
+paru -S zen-browser-bin spotify discord
+\`\`\`
+
+Try doing that on Ubuntu without adding three PPAs.
+
+### Understanding my system
+
+The install process forces you to make every decision consciously. By the end, you understand exactly what you have and why. This knowledge transfers — debugging becomes faster.
+
+## Who Should Use Arch
+
+Use it if: you're curious about how Linux works, willing to read docs, comfortable with occasional breakage.
+
+Don't use it if: you need your computer to just work for production deadlines.
+
+The best Linux distro is the one that lets you focus on your actual work.`}
+];
+
+function lp(){try{const r=localStorage.getItem(SK);if(r){const p=JSON.parse(r);if(Array.isArray(p)&&p.length)return p;}}catch(e){}sp(DEF);return DEF;}
+function sp(p){try{localStorage.setItem(SK,JSON.stringify(p));}catch(e){}}
+function gp(){return lp();}
+function gpo(id){return gp().find(p=>p.id===id);}
+function up(post){const posts=gp();const i=posts.findIndex(p=>p.id===post.id);if(i>=0)posts[i]=post;else posts.unshift(post);sp(posts);}
+function dp(id){sp(gp().filter(p=>p.id!==id));}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function mdr(txt){
+  let h=txt
+    .replace(/```(\w*)\n?([\s\S]*?)```/g,(_,l,c)=>`<pre><code>${esc(c.trim())}</code></pre>`)
+    .replace(/`([^`]+)`/g,(_,c)=>`<code>${esc(c)}</code>`)
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^---$/gm,'<hr>')
+    .replace(/^\- (.+)$/gm,'<li>$1</li>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" style="color:#89b4fa;text-decoration:none;">$1</a>');
+  return h.split(/\n\n+/).map(b=>{
+    b=b.trim();if(!b)return'';
+    if(/^<(h[1-6]|pre|blockquote|hr|li)/.test(b))return b.includes('<li>')?`<ul style="padding-left:16px;margin-bottom:8px;">${b}</ul>`:b;
+    return`<p>${b.replace(/\n/g,' ')}</p>`;
+  }).join('\n');
+}
+
+let cp='home',cf=null,sq='',et=null;
+const pages=['home','post','editor','manage','about'];
+const wsEls=[null,'ws1','ws2','ws3','ws4'];
+const wsPages=['','home','editor','manage','about'];
+
+function nav(p,opts={}){
+  pages.forEach(x=>{const el=document.getElementById('page-'+x);if(el)el.style.display='none';});
+  ['nb-home','nb-editor','nb-manage','nb-about'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.style.background='transparent';el.style.border='1px solid transparent';el.style.color='#a6adc8';}
+  });
+  wsPages.forEach((wp,i)=>{if(!wp)return;const el=document.getElementById(wsEls[i]);if(el){el.style.background='transparent';el.style.color='#6c7086';}});
+
+  cp=p;
+  const pe=document.getElementById('page-'+p);if(pe)pe.style.display='block';
+  const nb=document.getElementById('nb-'+p);
+  if(nb){nb.style.background='#313244';nb.style.border='1px solid rgba(203,166,247,.25)';nb.style.color='#cba6f7';}
+  const wi=wsPages.indexOf(p);if(wi>0){const we=document.getElementById(wsEls[wi]);if(we){we.style.background='#cba6f7';we.style.color='#1e1e2e';}}
+
+  if(p==='home')rHome();
+  if(p==='post')rPost(opts.id);
+  if(p==='editor')sEditor(opts.id||null);
+  if(p==='manage')rManage();
+  if(p==='about')rAbout();
+}
+
+function tagStyle(color){const c=COLORS[color]||'#9399b2';return `font-size:10px;padding:1px 6px;border-radius:3px;border:1px solid ${c}55;color:${c};cursor:pointer;font-family:inherit;background:none;`;}
+function pillStyle(active){return `font-size:10px;padding:1px 7px;border-radius:3px;cursor:pointer;border:${active?'1px solid #cba6f7;color:#cba6f7;background:rgba(203,166,247,.08)':'1px solid #45475a;color:#9399b2;background:none'};`;}
+
+function rHome(){
+  let posts=gp();
+  if(cf)posts=posts.filter(p=>(p.tags||[]).includes(cf));
+  if(sq)posts=posts.filter(p=>p.title.toLowerCase().includes(sq)||(p.excerpt||'').toLowerCase().includes(sq)||(p.tags||[]).some(t=>t.includes(sq)));
+  const pm=document.getElementById('pm');if(pm)pm.textContent=`${posts.length} post${posts.length!==1?'s':''}`;
+  const pc=document.getElementById('pc');if(!pc)return;
+  if(!posts.length){pc.innerHTML=`<div style="text-align:center;padding:40px;color:#6c7086;"><div style="font-size:24px;margin-bottom:8px;opacity:.4;">&#128221;</div><div>no posts found</div></div>`;return;}
+  pc.innerHTML=posts.map(p=>`
+    <div class="pc" onclick="nav('post',{id:'${p.id}'})" style="background:#181825;border:1px solid #313244;border-radius:3px;padding:14px;margin-bottom:10px;cursor:pointer;position:relative;overflow:hidden;transition:all .13s;">
+      <div class="pc-bar" style="position:absolute;left:0;top:0;bottom:0;width:2px;background:#313244;transition:background .13s;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:5px;">
+        <div style="font-size:13px;font-weight:600;color:#cdd6f4;line-height:1.3;">${esc(p.title)}</div>
+        <div style="font-size:10px;color:#6c7086;white-space:nowrap;margin-top:2px;">${fmtD(p.date)}</div>
+      </div>
+      <div style="font-size:11px;color:#a6adc8;line-height:1.6;margin-bottom:9px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${esc(p.excerpt||'')}</div>
+      <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+        ${(p.tags||[]).map(t=>`<button class="tag-${p.color||''}" onclick="event.stopPropagation();fTag('${t}')" style="${tagStyle(p.color)}">${t}</button>`).join('')}
+        <span class="rm" style="margin-left:auto;font-size:10px;color:#6c7086;transition:color .12s;">cat →</span>
+      </div>
+    </div>`).join('');
+  rTC();
+}
+
+function fTag(t){cf=cf===t?null:t;if(cp!=='home')nav('home');else rHome();rTC();}
+function onSearch(v){sq=v.toLowerCase();if(cp==='home')rHome();}
+
+function rTC(){
+  const posts=gp();const tags={};
+  posts.forEach(p=>(p.tags||[]).forEach(t=>{tags[t]=(tags[t]||0)+1;}));
+  const tc=document.getElementById('tc');
+  if(tc)tc.innerHTML=Object.entries(tags).sort((a,b)=>b[1]-a[1]).map(([t,n])=>`<button onclick="fTag('${t}')" style="${pillStyle(cf===t)}">${t} <sup>${n}</sup></button>`).join('');
+  const nc=document.getElementById('nc');if(nc)nc.textContent=gp().length;
+}
+
+function rPost(id){
+  const p=gpo(id);if(!p){nav('home');return;}
+  document.getElementById('pft').textContent=p.title;
+  document.getElementById('pfd').textContent=fmtD(p.date);
+  document.getElementById('pfr').textContent=`~${Math.max(1,Math.ceil((p.content||'').split(/\s+/).length/200))} min read`;
+  document.getElementById('pftags').innerHTML=(p.tags||[]).map(t=>`<button style="${tagStyle(p.color)}">${t}</button>`).join('');
+  document.getElementById('pb').className='pc-content';
+  document.getElementById('pb').innerHTML=mdr(p.content||'');
+  document.getElementById('pedit').onclick=()=>nav('editor',{id:p.id});
+}
+
+function sEditor(id){
+  et=id;const p=id?gpo(id):null;
+  document.getElementById('et').value=p?p.title:'';
+  document.getElementById('etg').value=p?(p.tags||[]).join(', '):'';
+  document.getElementById('eex').value=p?p.excerpt||'':'';
+  document.getElementById('eb').value=p?p.content||'':'';
+  document.getElementById('ec').value=p?p.color||'mauve':'mauve';
+  document.getElementById('eml').textContent=id?`editing: ${id}`:'new post';
+  updPrev();
+}
+
+function updPrev(){
+  const b=document.getElementById('eb').value;
+  const t=document.getElementById('et').value;
+  const pv=document.getElementById('pvb');
+  if(pv)pv.innerHTML=`<div style="font-size:14px;font-weight:700;color:#cdd6f4;margin-bottom:10px;">${esc(t||'Untitled')}</div><div class="pc-content">${mdr(b)}</div>`;
+}
+
+function savePost(){
+  const title=document.getElementById('et').value.trim();
+  if(!title){notif('title required',true);return;}
+  const tags=document.getElementById('etg').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const excerpt=document.getElementById('eex').value.trim();
+  const content=document.getElementById('eb').value;
+  const color=document.getElementById('ec').value;
+  const id=et||slug(title);
+  const ex=et?gpo(id):null;
+  up({id,title,date:ex?ex.date:tod(),tags,excerpt:excerpt||content.split('\n').find(l=>l.trim()&&!l.startsWith('#'))||'',content,color});
+  notif(`"${title}" saved ✓`);rTC();et=id;
+  document.getElementById('eml').textContent=`editing: ${id}`;
+}
+
+function exportMd(){
+  const t=document.getElementById('et').value.trim()||'untitled';
+  const content=document.getElementById('eb').value;
+  const tags=document.getElementById('etg').value;
+  dl(`${slug(t)}.md`,`---\ntitle: ${t}\ndate: ${tod()}\ntags: [${tags}]\n---\n\n${content}`);
+  notif('exported .md ✓');
+}
+
+function importMd(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.md,.txt';
+  inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+    r.onload=ev=>{let txt=ev.target.result,title=f.name.replace(/\.md$/,''),tags='',excerpt='';
+      if(txt.startsWith('---')){const fm=txt.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+        if(fm){const meta=fm[1];txt=fm[2].trim();
+          const tm=meta.match(/title:\s*(.+)/);if(tm)title=tm[1].trim();
+          const tgm=meta.match(/tags:\s*\[(.+)\]/);if(tgm)tags=tgm[1];}}
+      nav('editor');setTimeout(()=>{
+        document.getElementById('et').value=title;
+        document.getElementById('etg').value=tags;
+        document.getElementById('eb').value=txt;
+        et=null;updPrev();notif(`imported: ${f.name} ✓`);},80);
+    };r.readAsText(f);};inp.click();
+}
+
+function rManage(){
+  const posts=gp();const ml=document.getElementById('ml');if(!ml)return;
+  if(!posts.length){ml.innerHTML=`<div style="text-align:center;padding:30px;color:#6c7086;">no posts yet</div>`;return;}
+  ml.innerHTML=posts.map(p=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:#181825;border:1px solid #313244;border-radius:3px;margin-bottom:5px;font-size:11px;">
+      <div style="flex:1;color:#cdd6f4;font-weight:500;">${esc(p.title)}</div>
+      <div style="display:flex;gap:3px;">${(p.tags||[]).slice(0,2).map(t=>`<span style="font-size:10px;padding:1px 5px;border-radius:3px;border:1px solid #45475a;color:#9399b2;">${t}</span>`).join('')}</div>
+      <div style="color:#6c7086;font-size:10px;white-space:nowrap;">${fmtD(p.date)}</div>
+      <div style="display:flex;gap:4px;">
+        <button onclick="nav('post',{id:'${p.id}'})" style="font-family:inherit;font-size:10px;padding:2px 6px;border-radius:3px;background:transparent;border:1px solid #45475a;color:#a6adc8;cursor:pointer;">view</button>
+        <button onclick="nav('editor',{id:'${p.id}'})" style="font-family:inherit;font-size:10px;padding:2px 6px;border-radius:3px;background:transparent;border:1px solid #45475a;color:#a6adc8;cursor:pointer;">edit</button>
+        <button onclick="delP('${p.id}')" style="font-family:inherit;font-size:10px;padding:2px 6px;border-radius:3px;background:transparent;border:1px solid rgba(243,139,168,.4);color:#f38ba8;cursor:pointer;">rm</button>
+      </div>
+    </div>`).join('');
+}
+
+function delP(id){const p=gpo(id);if(!p||!confirm(`delete "${p.title}"?`))return;dp(id);rManage();rTC();notif('deleted');}
+function exportAll(){dl('riceblog.json',JSON.stringify(gp(),null,2));notif('exported JSON ✓');}
+function importAll(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.json';
+  inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+    r.onload=ev=>{try{const p=JSON.parse(ev.target.result);if(!Array.isArray(p))throw 0;sp(p);rManage();rTC();notif(`imported ${p.length} posts ✓`);}catch{notif('invalid JSON',true);}};
+    r.readAsText(f);};inp.click();
+}
+
+function rAbout(){
+  const p=gp();const tags=new Set(p.flatMap(x=>x.tags||[]));
+  const apc=document.getElementById('apc');if(apc)apc.textContent=p.length;
+  const atc=document.getElementById('atc');if(atc)atc.textContent=tags.size;
+}
+
+function slug(s){return s.toLowerCase().replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').slice(0,50);}
+function tod(){return new Date().toISOString().slice(0,10);}
+function fmtD(d){if(!d)return'';return new Date(d+'T00:00:00').toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});}
+function dl(fn,txt){const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);a.download=fn;a.click();}
+
+let _nt;
+function notif(msg,err=false){
+  const el=document.getElementById('notif');
+  el.style.borderColor=err?'#f38ba8':'#a6e3a1';
+  el.style.color=err?'#f38ba8':'#a6e3a1';
+  el.textContent=msg;
+  requestAnimationFrame(()=>{el.style.opacity='1';el.style.transform='translateY(0)';});
+  clearTimeout(_nt);_nt=setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(60px)';},2600);
+}
+
+function tick(){const el=document.getElementById('clk');if(el){const n=new Date();el.textContent=n.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});}}
+setInterval(tick,1000);tick();
+
+let _sdot=true;setInterval(()=>{const d=document.getElementById('sdot');if(d){d.style.opacity=(_sdot=!_sdot)?'1':'.3';}},1000);
+
+document.addEventListener('keydown',e=>{
+  const eb=document.getElementById('eb');
+  if(document.activeElement===eb){
+    if(e.key==='Tab'){e.preventDefault();const s=eb.selectionStart;eb.value=eb.value.substring(0,s)+'  '+eb.value.substring(eb.selectionEnd);eb.selectionStart=eb.selectionEnd=s+2;}
+    if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();savePost();}
+  }
+});
+
+nav('home');
+</script>
