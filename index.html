@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>~/blog</title>
+  <meta name="description" content="A minimal blog with i3/arch rice aesthetics" />
+  <meta name="theme-color" content="#1e1e2e" />
+
+  <!-- GitHub Pages compatible: pure static, no Jekyll -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Favicon inline SVG -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%231e1e2e'/><text x='4' y='24' font-size='20' fill='%23cba6f7'>$</text></svg>" />
+</head>
+<body>
+
+<div class="site-wrapper">
+
+  <!-- ─── STATUSBAR ─── -->
+  <header class="statusbar">
+    <div class="statusbar-left">
+      <span style="color:var(--mauve);font-weight:700;letter-spacing:0.02em;">i3</span>
+      <span class="ws-tag active" onclick="navigate('home')">1:blog</span>
+      <span class="ws-tag" onclick="navigate('editor')">2:editor</span>
+      <span class="ws-tag" onclick="navigate('manage')">3:manage</span>
+      <span class="ws-tag" onclick="navigate('about')">4:about</span>
+    </div>
+    <div class="statusbar-right">
+      <div class="status-item">
+        <div class="status-dot"></div>
+        <span>online</span>
+      </div>
+      <span style="color:var(--surface1)">|</span>
+      <span>arch</span>
+      <span style="color:var(--surface1)">|</span>
+      <span class="clock" id="clock">00:00</span>
+    </div>
+  </header>
+
+  <!-- ─── SIDEBAR ─── -->
+  <aside class="sidebar">
+
+    <div class="sidebar-logo">
+      <div class="logo-prompt"><span>user</span>@arch <span style="color:var(--overlay0)">~</span><span>/blog</span> <span style="color:var(--text)">$</span></div>
+      <div class="logo-name"><em>~</em>/blog</div>
+      <div class="logo-tagline">// writing from the tty</div>
+    </div>
+
+    <nav class="nav-section">
+      <div class="nav-label">navigation</div>
+      <button class="nav-item active" data-page="home" onclick="navigate('home')">
+        <span class="nav-icon">󰠶</span> ~/posts
+        <span class="nav-count" id="nav-count-posts">0</span>
+      </button>
+      <button class="nav-item" data-page="editor" onclick="navigate('editor')">
+        <span class="nav-icon">󰦪</span> ~/new-post
+      </button>
+      <button class="nav-item" data-page="manage" onclick="navigate('manage')">
+        <span class="nav-icon">󰒓</span> ~/manage
+      </button>
+      <button class="nav-item" data-page="about" onclick="navigate('about')">
+        <span class="nav-icon">󰋼</span> ~/about
+      </button>
+    </nav>
+
+    <div class="nav-section">
+      <div class="nav-label">tags</div>
+      <div class="tag-cloud" id="tag-cloud"></div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div style="margin-bottom:0.3rem;">
+        <span style="color:var(--green)">pacman</span> -Syu riceblog
+      </div>
+      <div style="color:var(--overlay0);">
+        no dependencies · pure js<br>
+        github pages ready
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ─── MAIN ─── -->
+  <main>
+
+    <!-- HOME -->
+    <section id="page-home" class="page active">
+      <div class="page-header">
+        <div class="page-title">posts</div>
+        <div class="page-headline">~/blog/posts</div>
+        <div class="page-meta" id="post-count"></div>
+      </div>
+
+      <div class="search-bar">
+        <span class="search-icon">󰍉</span>
+        <input type="text" class="search-input" id="search-input"
+               placeholder="grep -r 'keyword' ./posts" />
+      </div>
+
+      <div class="posts-grid" id="posts-container"></div>
+    </section>
+
+    <!-- SINGLE POST -->
+    <section id="page-post" class="page">
+      <div class="post-full-header">
+        <div style="margin-bottom:0.8rem;">
+          <button class="btn btn-ghost" style="font-size:0.68rem;" onclick="navigate('home')">
+            ← cd ..
+          </button>
+        </div>
+        <h1 class="post-full-title" id="post-full-title"></h1>
+        <div class="post-full-meta">
+          <span id="post-full-date"></span>
+          <span class="sep">·</span>
+          <span id="post-full-readtime"></span>
+          <span class="sep">·</span>
+          <div id="post-full-tags" style="display:flex;gap:0.4rem;flex-wrap:wrap;"></div>
+        </div>
+      </div>
+
+      <div class="post-content" id="post-body"></div>
+
+      <div style="margin-top:2.5rem;padding-top:1rem;border-top:var(--border);display:flex;gap:0.5rem;">
+        <button class="btn btn-ghost" onclick="navigate('home')">← back</button>
+        <button class="btn btn-ghost" id="post-edit-btn">edit</button>
+      </div>
+    </section>
+
+    <!-- EDITOR -->
+    <section id="page-editor" class="page">
+      <div class="page-header">
+        <div class="page-title">editor</div>
+        <div class="page-headline">nano <span id="editor-mode-label" style="color:var(--mauve);font-size:0.9rem;"></span></div>
+      </div>
+
+      <div class="editor-actions">
+        <button class="btn btn-primary" onclick="saveEditorPost()">
+          <span>󰆓</span> :w (save)
+        </button>
+        <button class="btn btn-green" onclick="exportPost()">
+          <span>󰈙</span> export .md
+        </button>
+        <button class="btn btn-ghost" onclick="importMarkdown()">
+          <span>󰈙</span> import .md
+        </button>
+        <button class="btn btn-ghost" onclick="navigate('home')" style="margin-left:auto;">
+          :q (close)
+        </button>
+      </div>
+
+      <div class="editor-layout">
+
+        <!-- write panel -->
+        <div class="editor-panel">
+          <div class="panel-header">
+            <div class="panel-dot dot-red"></div>
+            <div class="panel-dot dot-yellow"></div>
+            <div class="panel-dot dot-green"></div>
+            <span class="panel-title">INSERT — markdown</span>
+          </div>
+
+          <div class="editor-meta">
+            <input type="text" class="meta-input" id="ed-title" placeholder="title: My Post" style="flex:2;" />
+            <input type="text" class="meta-input" id="ed-tags" placeholder="tags: arch, rice, linux" />
+            <select class="meta-input" id="ed-color" style="flex:0.5;cursor:pointer;">
+              <option value="mauve">mauve</option>
+              <option value="blue">blue</option>
+              <option value="green">green</option>
+              <option value="peach">peach</option>
+              <option value="red">red</option>
+              <option value="sky">sky</option>
+              <option value="teal">teal</option>
+              <option value="yellow">yellow</option>
+            </select>
+          </div>
+
+          <div style="padding:0.4rem 0.8rem;border-bottom:var(--border);">
+            <input type="text" class="meta-input" id="ed-excerpt"
+                   placeholder="excerpt: Short description shown in list (optional)" style="width:100%;" />
+          </div>
+
+          <textarea class="editor-textarea" id="ed-body"
+            placeholder="## Start writing in Markdown
+
+Use **bold**, *italic*, `code`, and fenced code blocks.
+
+```bash
+echo 'hello, arch'
+```
+
+Press Ctrl+S to save."></textarea>
+        </div>
+
+        <!-- preview panel -->
+        <div class="preview-panel">
+          <div class="panel-header">
+            <div class="panel-dot dot-red"></div>
+            <div class="panel-dot dot-yellow"></div>
+            <div class="panel-dot dot-green"></div>
+            <span class="panel-title">PREVIEW — rendered</span>
+          </div>
+          <div class="preview-body" id="preview-body"></div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:0.8rem;font-size:0.65rem;color:var(--overlay0);">
+        Ctrl+S · save &nbsp;|&nbsp; Tab · indent &nbsp;|&nbsp; Markdown supported
+      </div>
+    </section>
+
+    <!-- MANAGE -->
+    <section id="page-manage" class="page">
+      <div class="page-header">
+        <div class="page-title">manage</div>
+        <div class="page-headline">ls -la ~/posts</div>
+      </div>
+
+      <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="navigate('editor')">
+          <span>+</span> new post
+        </button>
+        <button class="btn btn-ghost" onclick="exportAll()">
+          <span>󰈙</span> export all (JSON)
+        </button>
+        <button class="btn btn-ghost" onclick="importAll()">
+          <span>󰈙</span> import JSON
+        </button>
+      </div>
+
+      <div id="manage-list"></div>
+
+      <div style="margin-top:2rem;padding:1rem;background:var(--mantle);border:var(--border);border-radius:var(--radius);font-size:0.72rem;color:var(--overlay0);">
+        <span style="color:var(--green);">$</span>
+        Posts are stored in <span style="color:var(--peach);">localStorage</span>.
+        Export JSON to backup · Import to restore.
+        <br>For GitHub Pages deployment, export individual posts as <span style="color:var(--peach);">.md</span> files.
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="page-about" class="page">
+      <div class="page-header">
+        <div class="page-title">about</div>
+        <div class="page-headline">cat /etc/blog.conf</div>
+      </div>
+
+      <div class="about-grid">
+        <div class="info-card">
+          <div class="info-card-title">system</div>
+          <div class="info-item"><span class="info-key">os</span><span class="info-val">arch linux</span></div>
+          <div class="info-item"><span class="info-key">wm</span><span class="info-val">i3-gaps</span></div>
+          <div class="info-item"><span class="info-key">bar</span><span class="info-val">polybar</span></div>
+          <div class="info-item"><span class="info-key">terminal</span><span class="info-val">alacritty</span></div>
+          <div class="info-item"><span class="info-key">editor</span><span class="info-val">neovim</span></div>
+          <div class="info-item"><span class="info-key">shell</span><span class="info-val">zsh + starship</span></div>
+          <div class="info-item"><span class="info-key">theme</span><span class="info-val">catppuccin mocha</span></div>
+          <div class="info-item"><span class="info-key">font</span><span class="info-val">JetBrains Mono</span></div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-card-title">blog</div>
+          <div class="info-item"><span class="info-key">engine</span><span class="info-val">vanilla js</span></div>
+          <div class="info-item"><span class="info-key">host</span><span class="info-val">github pages</span></div>
+          <div class="info-item"><span class="info-key">storage</span><span class="info-val">localStorage</span></div>
+          <div class="info-item"><span class="info-key">deps</span><span class="info-val" style="color:var(--green);">zero</span></div>
+          <div class="info-item"><span class="info-key">posts</span><span class="info-val" id="about-post-count">—</span></div>
+          <div class="info-item"><span class="info-key">tags</span><span class="info-val" id="about-tag-count">—</span></div>
+        </div>
+
+        <div class="info-card" style="grid-column: 1 / -1;">
+          <div class="info-card-title">dotfiles snippet</div>
+          <div class="fetch-output">
+<span class="comment"># ~/.config/i3/config (excerpt)</span>
+<span class="key">set</span> $mod Mod4
+<span class="key">font</span> pango:JetBrains Mono 10
+
+<span class="comment"># colors (catppuccin mocha)</span>
+<span class="key">set</span> $base   <span class="str">#1e1e2e</span>
+<span class="key">set</span> $mauve  <span class="str">#cba6f7</span>
+<span class="key">set</span> $text   <span class="str">#cdd6f4</span>
+
+<span class="comment"># window colors</span>
+<span class="key">client.focused</span>          $mauve $base $text $mauve $mauve
+<span class="key">client.unfocused</span>        $base  $base $text $base  $base
+
+<span class="comment"># gaps</span>
+<span class="key">gaps inner</span> <span class="val">8</span>
+<span class="key">gaps outer</span> <span class="val">4</span>
+<span class="key">smart_gaps</span> <span class="val">on</span>
+<span class="key">smart_borders</span> <span class="val">on</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:1.5rem;font-size:0.72rem;color:var(--overlay0);">
+        Built with pure HTML/CSS/JS · no framework · no bundler ·
+        <a href="https://pages.github.com" target="_blank" style="color:var(--mauve);text-decoration:none;">GitHub Pages</a> ready
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ─── FOOTER ─── -->
+  <footer>
+    <span>~/blog · <a href="#">github</a></span>
+    <span style="color:var(--overlay0);">
+      btw, i use arch &nbsp;·&nbsp;
+      <span style="color:var(--green);">no cookies</span> &nbsp;·&nbsp;
+      <span style="color:var(--mauve);">catppuccin mocha</span>
+    </span>
+  </footer>
+
+</div><!-- /site-wrapper -->
+
+<script src="js/app.js"></script>
+</body>
+</html>
